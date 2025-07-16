@@ -10,6 +10,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import {
+  MOCK_AGENDAMENTOS,
+  MOCK_CLIENTES,
+  MOCK_ORDENS_SERVICO,
+  MOCK_SERVICOS,
+  MOCK_VEICULOS,
+  getMockData,
+} from "@/data/mock-data";
 
 // Importar os componentes
 import { Login } from "@/components/login";
@@ -82,10 +90,12 @@ interface OrdemServico {
 
 export function OficinaApp() {
   const [usuarioLogado, setUsuarioLogado] = useState<string | null>(null);
-  const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
-  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
-  const [ordensServico, setOrdensServico] = useState<OrdemServico[]>([]);
+  const [clientes, setClientes] = useState<Cliente[]>(MOCK_CLIENTES);
+  const [veiculos, setVeiculos] = useState<Veiculo[]>(MOCK_VEICULOS);
+  const [agendamentos, setAgendamentos] =
+    useState<Agendamento[]>(MOCK_AGENDAMENTOS);
+  const [ordensServico, setOrdensServico] =
+    useState<OrdemServico[]>(MOCK_ORDENS_SERVICO);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -141,6 +151,26 @@ export function OficinaApp() {
       setOperadorAtual(operador);
     }
   }, [operadores]);
+
+  // Carregar dados mock (simula API)
+  useEffect(() => {
+    const loadMockData = async () => {
+      try {
+        const data = await getMockData(1000); // 1 segundo de delay
+        setClientes(data.clientes);
+        setVeiculos(data.veiculos);
+        setAgendamentos(data.agendamentos);
+        setOrdensServico(data.ordensServico);
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+      }
+    };
+
+    // Carregar apenas se não houver usuário logado ainda
+    if (usuarioLogado) {
+      loadMockData();
+    }
+  }, [usuarioLogado]);
 
   // Função de login
   const handleLogin = (usuario: string, senha: string) => {
